@@ -33,6 +33,7 @@ class _TwitchClient(twitchio.Client):
 
         self._total_valid += 1
         self._emulator.queue_command(text)
+        self._emulator.set_last_input("Twitch", user, text)
         print(f"[twitch] '{text}' from {user} (valid cmd #{self._total_valid})")
 
 

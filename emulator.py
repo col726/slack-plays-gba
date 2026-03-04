@@ -2,8 +2,16 @@ import io
 import threading
 import time
 
+from PIL import Image, ImageDraw, ImageFont
 from pyboy import PyBoy
 from pyboy.utils import WindowEvent
+
+try:
+    _FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 8)
+except Exception:
+    _FONT = ImageFont.load_default()
+
+_OVERLAY_DURATION = 5.0  # seconds to show the overlay after a command
 
 BUTTON_MAP: dict[str, tuple[WindowEvent, WindowEvent]] = {
     "up":     (WindowEvent.PRESS_ARROW_UP,      WindowEvent.RELEASE_ARROW_UP),
@@ -37,6 +45,11 @@ class Emulator:
         self._audio_buffer = bytearray()
         self._audio_lock = threading.Lock()
 
+        # Input overlay
+        self._overlay_text: str = ""
+        self._overlay_time: float = 0.0
+        self._overlay_lock = threading.Lock()
+
     def queue_command(self, command: str) -> bool:
         """Add a validated command to the input queue. Returns True if accepted."""
         cmd = command.lower().strip()
@@ -49,10 +62,30 @@ class Emulator:
         print(f"[emulator] Queued '{cmd}' (queue depth: {queue_len})")
         return True
 
+    def set_last_input(self, platform: str, username: str, command: str) -> None:
+        """Set the overlay text shown on the stream for the next few seconds."""
+        with self._overlay_lock:
+            self._overlay_text = f"[{platform}] {username}: {command}"
+            self._overlay_time = time.monotonic()
+
     def get_raw_frame(self) -> bytes:
         """Return raw RGB24 bytes of the latest screen frame (for FFmpeg streaming)."""
         with self._frame_lock:
-            return self._latest_frame
+            frame = self._latest_frame
+
+        with self._overlay_lock:
+            text = self._overlay_text
+            age = time.monotonic() - self._overlay_time
+
+        if text and age < _OVERLAY_DURATION:
+            img = Image.frombytes("RGB", (160, 144), frame)
+            draw = ImageDraw.Draw(img)
+            x, y = 2, 134  # bottom-left, above the bottom edge
+            draw.text((x + 1, y + 1), text, font=_FONT, fill=(0, 0, 0))   # shadow
+            draw.text((x, y), text, font=_FONT, fill=(255, 255, 0))        # yellow text
+            return img.tobytes()
+
+        return frame
 
     def get_screenshot(self) -> bytes:
         """Capture the current screen as PNG bytes."""

@@ -28,6 +28,7 @@ class SlackBot(BaseBotAdapter):
         self._total_valid = 0
         self._total_screenshots = 0
         self._handler: SocketModeHandler | None = None
+        self._user_cache: dict[str, str] = {}
 
         if MODE == "democracy":
             self.processor = DemocracyProcessor(
@@ -40,6 +41,20 @@ class SlackBot(BaseBotAdapter):
             print("[bot] Mode: anarchy")
 
         self._register_handlers()
+
+    def _get_display_name(self, user_id: str) -> str:
+        if user_id not in self._user_cache:
+            try:
+                result = self.client.users_info(user=user_id)
+                user = result["user"]
+                self._user_cache[user_id] = (
+                    user.get("profile", {}).get("display_name")
+                    or user.get("real_name")
+                    or user_id
+                )
+            except Exception:
+                self._user_cache[user_id] = user_id
+        return self._user_cache[user_id]
 
     def _register_handlers(self):
         @self.app.message()
@@ -65,6 +80,10 @@ class SlackBot(BaseBotAdapter):
             accepted = self.processor.process(text)
             status = "accepted" if accepted else "rejected"
             print(f"[bot] '{text}' from {user} — {status} (valid cmd #{self._total_valid})")
+
+            if accepted:
+                display_name = self._get_display_name(user)
+                self.emulator.set_last_input("Slack", display_name, text)
 
             if accepted and MODE == "democracy":
                 counts = self.processor.get_vote_counts()
