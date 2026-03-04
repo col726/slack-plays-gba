@@ -86,7 +86,7 @@ class SlackBot:
             self.client.files_upload_v2(
                 channel=CHANNEL_ID,
                 content=png_bytes,
-                filename="pokemon.png",
+                filename="screenshot.png",
                 title=caption or "Current game state",
             )
             self._total_screenshots += 1

@@ -8,7 +8,7 @@ from bot import SlackBot
 
 
 def main():
-    print("=== SJP Plays Pokemon ===")
+    print("=== Slack Plays GBA ===")
 
     emulator = Emulator(ROM_PATH, frames_per_input=FRAMES_PER_INPUT)
     bot = SlackBot(emulator)
