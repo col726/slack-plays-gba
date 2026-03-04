@@ -82,9 +82,10 @@ class Emulator:
         if text and age < _OVERLAY_DURATION:
             img = Image.frombytes("RGB", (160, 144), frame)
             draw = ImageDraw.Draw(img)
-            x, y = 2, 134  # bottom-left, above the bottom edge
-            draw.text((x + 1, y + 1), text, font=_FONT, fill=(0, 0, 0))   # shadow
-            draw.text((x, y), text, font=_FONT, fill=(255, 255, 0))        # yellow text
+            bar_h = 13
+            bar_y = 144 - bar_h
+            draw.rectangle([(0, bar_y), (160, 144)], fill=(20, 20, 20))
+            draw.text((2, bar_y + 2), text, font=_FONT, fill=(255, 255, 255))
             return img.tobytes()
 
         return frame
