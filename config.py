@@ -37,6 +37,11 @@ SAVE_STATE_PATH = os.environ.get("SAVE_STATE_PATH", "autosave.state")
 MARKET_BOT_ENABLED = os.environ.get("MARKET_BOT_ENABLED", "").lower() in ("1", "true", "yes")
 MARKET_POLL_INTERVAL = int(os.environ.get("MARKET_POLL_INTERVAL", "300"))
 
+# Weather bot (optional — requires OpenWeatherMap API key)
+WEATHER_API_KEY = os.environ.get("WEATHER_API_KEY", "")
+WEATHER_CITY = os.environ.get("WEATHER_CITY", "New York")
+WEATHER_POLL_INTERVAL = int(os.environ.get("WEATHER_POLL_INTERVAL", "600"))
+
 # Twitch streaming (optional — leave blank to disable)
 TWITCH_STREAM_KEY = os.environ.get("TWITCH_STREAM_KEY", "")
 STREAM_FPS = int(os.environ.get("STREAM_FPS", "30"))
