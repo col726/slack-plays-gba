@@ -7,6 +7,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
 
+from base_bot import BaseBotAdapter
 from config import (
     SLACK_BOT_TOKEN, SLACK_APP_TOKEN, CHANNEL_ID,
     MODE, DEMOCRACY_WINDOW, SCREENSHOT_INTERVAL, FRAMES_PER_INPUT,
@@ -18,7 +19,7 @@ from command_processor import AnarchyProcessor, DemocracyProcessor
 VALID_COMMANDS = {"up", "down", "left", "right", "a", "b", "start", "select"}
 
 
-class SlackBot:
+class SlackBot(BaseBotAdapter):
     def __init__(self, emulator: Emulator):
         self.emulator = emulator
         self.app = App(token=SLACK_BOT_TOKEN)
@@ -26,6 +27,7 @@ class SlackBot:
         self._total_messages = 0
         self._total_valid = 0
         self._total_screenshots = 0
+        self._handler: SocketModeHandler | None = None
 
         if MODE == "democracy":
             self.processor = DemocracyProcessor(
@@ -130,8 +132,14 @@ class SlackBot:
             except Exception as e:
                 print(f"[bot] Screenshot loop error: {e}")
 
-    def start(self):
+    def start(self) -> None:
         t = threading.Thread(target=self._screenshot_loop, daemon=True)
         t.start()
         print(f"[bot] Listening on channel {CHANNEL_ID}...")
-        SocketModeHandler(self.app, SLACK_APP_TOKEN).start()
+        self._handler = SocketModeHandler(self.app, SLACK_APP_TOKEN)
+        self._handler.start()
+
+    def stop(self) -> None:
+        print("[bot] Stopping Slack bot...")
+        if self._handler:
+            self._handler.close()

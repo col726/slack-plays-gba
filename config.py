@@ -3,10 +3,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
-SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
-CHANNEL_ID = os.environ["SLACK_CHANNEL_ID"]
 ROM_PATH = os.environ["ROM_PATH"]
+
+# Slack (optional — leave blank to disable)
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", "")
+SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN", "")
+CHANNEL_ID = os.environ.get("SLACK_CHANNEL_ID", "")
+
+# Twitch chat bot (optional — leave blank to disable)
+# Get a token at https://twitchapps.com/tmi/ — pass the value without the "oauth:" prefix
+TWITCH_BOT_TOKEN = os.environ.get("TWITCH_BOT_TOKEN", "")
+TWITCH_CHANNEL = os.environ.get("TWITCH_CHANNEL", "")  # channel name, e.g. "yourchannel"
 
 MODE = os.environ.get("MODE", "anarchy")          # "anarchy" or "democracy"
 DEMOCRACY_WINDOW = int(os.environ.get("DEMOCRACY_WINDOW", "10"))  # seconds per vote window
