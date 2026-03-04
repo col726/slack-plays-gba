@@ -1,7 +1,7 @@
 import signal
 import threading
 
-from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL, SAVE_STATE_PATH
+from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL, SAVE_STATE_PATH, MARKET_BOT_ENABLED
 from emulator import Emulator
 from base_bot import BaseBotAdapter
 
@@ -44,8 +44,14 @@ def main():
     else:
         print("[main] No TWITCH_BOT_TOKEN/TWITCH_CHANNEL set — skipping Twitch bot")
 
+    if MARKET_BOT_ENABLED:
+        from market_bot import MarketBot
+        bots.append(MarketBot(emulator))
+    else:
+        print("[main] MARKET_BOT_ENABLED not set — skipping market bot")
+
     if not bots:
-        print("[main] No bots configured — exiting. Set SLACK_BOT_TOKEN or TWITCH_BOT_TOKEN+TWITCH_CHANNEL.")
+        print("[main] No bots configured — exiting. Set SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN+TWITCH_CHANNEL, or MARKET_BOT_ENABLED.")
         emulator.stop()
         return
 

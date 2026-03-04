@@ -33,6 +33,10 @@ STREAM_WIDTH = GB_WIDTH * STREAM_SCALE   # 960
 STREAM_HEIGHT = GB_HEIGHT * STREAM_SCALE  # 864
 SAVE_STATE_PATH = os.environ.get("SAVE_STATE_PATH", "autosave.state")
 
+# Market bot (optional — no credentials needed)
+MARKET_BOT_ENABLED = os.environ.get("MARKET_BOT_ENABLED", "").lower() in ("1", "true", "yes")
+MARKET_POLL_INTERVAL = int(os.environ.get("MARKET_POLL_INTERVAL", "300"))
+
 # Twitch streaming (optional — leave blank to disable)
 TWITCH_STREAM_KEY = os.environ.get("TWITCH_STREAM_KEY", "")
 STREAM_FPS = int(os.environ.get("STREAM_FPS", "30"))
