@@ -4,6 +4,16 @@ A "Twitch Plays Pokemon"-style bot that lets your Slack workspace control a Game
 
 ![Slack Plays GBA in action](slack.jpg) Users send button commands in a Slack channel, and the bot feeds them into PyBoy in real time. Screenshots are posted automatically so everyone can follow along.
 
+## How It Works
+
+The bot runs three concurrent threads:
+
+- **Emulator** — [PyBoy](https://github.com/Bonsai/PyBoy) runs the Game Boy ROM headlessly at normal speed (~60 fps). Each tick, the latest frame and audio data are written to shared buffers.
+- **Slack bot** — Listens for messages via Socket Mode (no public URL needed). Valid button commands are passed to the active command processor, which either executes them immediately (anarchy) or tallies votes and executes the winner at the end of each time window (democracy). Accepted commands are queued and fed into PyBoy as press/release input events held for a configurable number of frames.
+- **Screenshot loop** — On a configurable interval, captures a PNG from the emulator and uploads it to the Slack channel so everyone can follow the game state. Quiet hours suppress overnight posts.
+
+Optionally, a fourth thread pipes raw RGB frames and audio from the emulator buffers to Twitch via ffmpeg.
+
 ## Prerequisites
 
 - Python 3.12+
@@ -16,7 +26,7 @@ A "Twitch Plays Pokemon"-style bot that lets your Slack workspace control a Game
 **1. Clone the repo and create a virtual environment**
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/col726/slack-plays-gba.git
 cd slack-plays-gba
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
