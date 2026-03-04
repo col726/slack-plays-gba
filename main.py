@@ -1,7 +1,7 @@
 import signal
 import threading
 
-from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL
+from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL, SAVE_STATE_PATH
 from emulator import Emulator
 from base_bot import BaseBotAdapter
 
@@ -10,6 +10,12 @@ def main():
     print("=== Slack Plays GBA ===")
 
     emulator = Emulator(ROM_PATH, frames_per_input=FRAMES_PER_INPUT)
+
+    import os
+    if SAVE_STATE_PATH and os.path.exists(SAVE_STATE_PATH):
+        emulator.load_state(SAVE_STATE_PATH)
+    else:
+        print(f"[main] No save state found at {SAVE_STATE_PATH} — starting fresh")
 
     emulator_thread = threading.Thread(target=emulator.run, daemon=True)
     emulator_thread.start()
@@ -51,11 +57,13 @@ def main():
 
     def shutdown(sig, frame):
         print("\n[main] Shutting down...")
-        emulator.stop()
-        for bot in bots:
-            bot.stop()
         if streamer:
             streamer.stop()
+        for bot in bots:
+            bot.stop()
+        emulator.stop()
+        if SAVE_STATE_PATH:
+            emulator.save_state(SAVE_STATE_PATH)
         stop_event.set()
 
     signal.signal(signal.SIGINT, shutdown)

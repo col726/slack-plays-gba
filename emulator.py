@@ -50,6 +50,8 @@ class Emulator:
         self._overlay_time: float = 0.0
         self._overlay_lock = threading.Lock()
 
+        self._loop_stopped = threading.Event()
+
     def queue_command(self, command: str) -> bool:
         """Add a validated command to the input queue. Returns True if accepted."""
         cmd = command.lower().strip()
@@ -161,9 +163,29 @@ class Emulator:
                 last_status_time = now
 
         print(f"[emulator] Game loop ended — {self._frame_count} frames, {self._total_commands} total commands")
+        self._loop_stopped.set()
+
+    def save_state(self, path: str) -> None:
+        """Save emulator state to disk. Call only after the game loop has stopped."""
+        try:
+            with open(path, "wb") as f:
+                self.pyboy.save_state(f)
+            print(f"[emulator] State saved to {path}")
+        except Exception as e:
+            print(f"[emulator] Failed to save state: {e}")
+
+    def load_state(self, path: str) -> None:
+        """Load emulator state from disk. Call before starting the game loop."""
+        try:
+            with open(path, "rb") as f:
+                self.pyboy.load_state(f)
+            print(f"[emulator] State loaded from {path}")
+        except Exception as e:
+            print(f"[emulator] Failed to load state: {e}")
 
     def stop(self):
         print("[emulator] Stopping...")
         self._running = False
+        self._loop_stopped.wait(timeout=3.0)
         self.pyboy.stop()
         print("[emulator] Stopped")

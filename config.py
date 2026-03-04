@@ -24,6 +24,7 @@ TIMEZONE = os.environ.get("TIMEZONE", "America/New_York")
 QUIET_HOURS_START = int(os.environ.get("QUIET_HOURS_START", "22"))  # 10pm
 QUIET_HOURS_END = int(os.environ.get("QUIET_HOURS_END", "8"))       # 8am
 FRAMES_PER_INPUT = int(os.environ.get("FRAMES_PER_INPUT", "6"))  # frames to hold a button
+SAVE_STATE_PATH = os.environ.get("SAVE_STATE_PATH", "autosave.state")
 
 # Twitch streaming (optional — leave blank to disable)
 TWITCH_STREAM_KEY = os.environ.get("TWITCH_STREAM_KEY", "")
