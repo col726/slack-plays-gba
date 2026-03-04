@@ -6,8 +6,10 @@ from PIL import Image, ImageDraw, ImageFont
 from pyboy import PyBoy
 from pyboy.utils import WindowEvent
 
+from config import GB_WIDTH, GB_HEIGHT, STREAM_WIDTH, STREAM_HEIGHT
+
 try:
-    _FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 8)
+    _FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
 except Exception:
     _FONT = ImageFont.load_default()
 
@@ -79,16 +81,17 @@ class Emulator:
             text = self._overlay_text
             age = time.monotonic() - self._overlay_time
 
-        if text and age < _OVERLAY_DURATION:
-            img = Image.frombytes("RGB", (160, 144), frame)
-            draw = ImageDraw.Draw(img)
-            bar_h = 13
-            bar_y = 144 - bar_h
-            draw.rectangle([(0, bar_y), (160, 144)], fill=(20, 20, 20))
-            draw.text((2, bar_y + 2), text, font=_FONT, fill=(255, 255, 255))
-            return img.tobytes()
+        img = Image.frombytes("RGB", (GB_WIDTH, GB_HEIGHT), frame)
+        img = img.resize((STREAM_WIDTH, STREAM_HEIGHT), Image.NEAREST)
 
-        return frame
+        if text and age < _OVERLAY_DURATION:
+            draw = ImageDraw.Draw(img)
+            bar_h = 30
+            bar_y = STREAM_HEIGHT - bar_h
+            draw.rectangle([(0, bar_y), (STREAM_WIDTH, STREAM_HEIGHT)], fill=(20, 20, 20))
+            draw.text((6, bar_y + 5), text, font=_FONT, fill=(255, 255, 255))
+
+        return img.tobytes()
 
     def get_screenshot(self) -> bytes:
         """Capture the current screen as PNG bytes."""

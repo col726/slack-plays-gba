@@ -24,6 +24,13 @@ TIMEZONE = os.environ.get("TIMEZONE", "America/New_York")
 QUIET_HOURS_START = int(os.environ.get("QUIET_HOURS_START", "22"))  # 10pm
 QUIET_HOURS_END = int(os.environ.get("QUIET_HOURS_END", "8"))       # 8am
 FRAMES_PER_INPUT = int(os.environ.get("FRAMES_PER_INPUT", "6"))  # frames to hold a button
+
+# Game Boy native resolution and stream output size
+GB_WIDTH = 160
+GB_HEIGHT = 144
+STREAM_SCALE = 6
+STREAM_WIDTH = GB_WIDTH * STREAM_SCALE   # 960
+STREAM_HEIGHT = GB_HEIGHT * STREAM_SCALE  # 864
 SAVE_STATE_PATH = os.environ.get("SAVE_STATE_PATH", "autosave.state")
 
 # Twitch streaming (optional — leave blank to disable)

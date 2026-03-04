@@ -5,17 +5,9 @@ import threading
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from config import TWITCH_STREAM_KEY, STREAM_FPS, TIMEZONE, QUIET_HOURS_START, QUIET_HOURS_END
+from config import TWITCH_STREAM_KEY, STREAM_FPS, TIMEZONE, QUIET_HOURS_START, QUIET_HOURS_END, STREAM_WIDTH, STREAM_HEIGHT
 
 TWITCH_RTMP = "rtmp://live.twitch.tv/app"
-
-# Game Boy native resolution
-GB_WIDTH = 160
-GB_HEIGHT = 144
-
-# 6x nearest-neighbor upscale — preserves the pixel art look
-STREAM_WIDTH = 960
-STREAM_HEIGHT = 864
 
 # Audio: signed 8-bit stereo at 48kHz (PyBoy's native format)
 SAMPLE_RATE = 48000
@@ -53,7 +45,7 @@ class TwitchStreamer:
             "-thread_queue_size", "512",
             "-f", "rawvideo",
             "-pixel_format", "rgb24",
-            "-video_size", f"{GB_WIDTH}x{GB_HEIGHT}",
+            "-video_size", f"{STREAM_WIDTH}x{STREAM_HEIGHT}",
             "-framerate", str(STREAM_FPS),
             "-i", f"pipe:{video_fd}",
             # Audio input — signed 8-bit stereo PCM
@@ -63,7 +55,6 @@ class TwitchStreamer:
             "-ac", str(AUDIO_CHANNELS),
             "-i", f"pipe:{audio_fd}",
             # Video encoding
-            "-vf", f"scale={STREAM_WIDTH}:{STREAM_HEIGHT}:flags=neighbor",
             "-c:v", "libx264",
             "-preset", "veryfast",
             "-maxrate", "3000k",
