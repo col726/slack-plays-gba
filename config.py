@@ -42,6 +42,11 @@ WEATHER_API_KEY = os.environ.get("WEATHER_API_KEY", "")
 WEATHER_CITY = os.environ.get("WEATHER_CITY", "New York")
 WEATHER_POLL_INTERVAL = int(os.environ.get("WEATHER_POLL_INTERVAL", "600"))
 
+# Earthquake bot (optional — no credentials needed, uses USGS)
+EARTHQUAKE_ENABLED = os.environ.get("EARTHQUAKE_ENABLED", "").lower() in ("1", "true", "yes")
+EARTHQUAKE_POLL_INTERVAL = int(os.environ.get("EARTHQUAKE_POLL_INTERVAL", "120"))
+EARTHQUAKE_MIN_MAGNITUDE = float(os.environ.get("EARTHQUAKE_MIN_MAGNITUDE", "2.5"))
+
 # Twitch streaming (optional — leave blank to disable)
 TWITCH_STREAM_KEY = os.environ.get("TWITCH_STREAM_KEY", "")
 STREAM_FPS = int(os.environ.get("STREAM_FPS", "30"))

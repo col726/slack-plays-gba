@@ -1,7 +1,7 @@
 import signal
 import threading
 
-from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL, SAVE_STATE_PATH, MARKET_BOT_ENABLED, WEATHER_API_KEY
+from config import ROM_PATH, FRAMES_PER_INPUT, TWITCH_STREAM_KEY, SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN, TWITCH_CHANNEL, SAVE_STATE_PATH, MARKET_BOT_ENABLED, WEATHER_API_KEY, EARTHQUAKE_ENABLED
 from emulator import Emulator
 from base_bot import BaseBotAdapter
 
@@ -55,6 +55,12 @@ def main():
         bots.append(WeatherBot(emulator))
     else:
         print("[main] No WEATHER_API_KEY set — skipping weather bot")
+
+    if EARTHQUAKE_ENABLED:
+        from earthquake_bot import EarthquakeBot
+        bots.append(EarthquakeBot(emulator))
+    else:
+        print("[main] EARTHQUAKE_ENABLED not set — skipping earthquake bot")
 
     if not bots:
         print("[main] No bots configured — exiting. Set SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN+TWITCH_CHANNEL, or MARKET_BOT_ENABLED.")
