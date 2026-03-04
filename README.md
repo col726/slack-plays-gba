@@ -74,6 +74,31 @@ Send button commands in the configured Slack channel:
 
 Screenshots are posted to the channel automatically on the interval set by `SCREENSHOT_INTERVAL` (default: 300 seconds). Quiet hours can be configured with `QUIET_HOURS_START` and `QUIET_HOURS_END` to suppress overnight screenshots.
 
+## Optional: Twitch Chat Bot
+
+To accept commands from Twitch chat:
+
+**1. Register an application**
+
+Go to [dev.twitch.tv/console](https://dev.twitch.tv/console), create a new application, and set the OAuth redirect URL to `http://localhost`.
+
+**2. Generate a user access token**
+
+Open the following URL in your browser (replace `YOUR_CLIENT_ID`):
+
+```
+https://id.twitch.tv/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=http://localhost&response_type=token&scope=chat:read+chat:edit
+```
+
+Authorize the app. Twitch will redirect to `http://localhost#access_token=xxxxx` — copy the token value from the URL.
+
+**3. Configure `.env`**
+
+```
+TWITCH_BOT_TOKEN=xxxxx
+TWITCH_CHANNEL=yourchannel
+```
+
 ## Optional: Twitch Streaming
 
 Set `TWITCH_STREAM_KEY` in `.env` to your Twitch stream key. The bot will pipe the emulator output to Twitch via ffmpeg automatically. Leave it blank to disable.

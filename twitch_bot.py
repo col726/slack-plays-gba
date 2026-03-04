@@ -38,20 +38,22 @@ class _TwitchClient(twitchio.Client):
 
 class TwitchBot(BaseBotAdapter):
     def __init__(self, emulator: Emulator):
-        self._client = _TwitchClient(
-            token=TWITCH_BOT_TOKEN,
-            channel=TWITCH_CHANNEL,
-            emulator=emulator,
-        )
+        self._emulator = emulator
+        self._client: _TwitchClient | None = None
         self._loop: asyncio.AbstractEventLoop | None = None
 
     def start(self) -> None:
         print(f"[twitch] Starting bot for channel #{TWITCH_CHANNEL}...")
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
+        self._client = _TwitchClient(
+            token=TWITCH_BOT_TOKEN,
+            channel=TWITCH_CHANNEL,
+            emulator=self._emulator,
+        )
         self._loop.run_until_complete(self._client.start())
 
     def stop(self) -> None:
         print("[twitch] Stopping...")
-        if self._loop and not self._loop.is_closed():
+        if self._client and self._loop and not self._loop.is_closed():
             asyncio.run_coroutine_threadsafe(self._client.close(), self._loop)
