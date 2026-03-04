@@ -1,6 +1,8 @@
 # Slack Plays GBA
 
-A "Twitch Plays Pokemon"-style bot that lets your Slack workspace control a Game Boy emulator. Users send button commands in a Slack channel, and the bot feeds them into PyBoy in real time. Screenshots are posted automatically so everyone can follow along.
+A "Twitch Plays Pokemon"-style bot that lets your Slack workspace control a Game Boy emulator.
+
+![Slack Plays GBA in action](slack.jpg) Users send button commands in a Slack channel, and the bot feeds them into PyBoy in real time. Screenshots are posted automatically so everyone can follow along.
 
 ## Prerequisites
 
@@ -65,3 +67,7 @@ Screenshots are posted to the channel automatically on the interval set by `SCRE
 ## Optional: Twitch Streaming
 
 Set `TWITCH_STREAM_KEY` in `.env` to your Twitch stream key. The bot will pipe the emulator output to Twitch via ffmpeg automatically. Leave it blank to disable.
+
+## License
+
+[MIT](LICENSE)
