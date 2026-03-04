@@ -47,6 +47,10 @@ EARTHQUAKE_ENABLED = os.environ.get("EARTHQUAKE_ENABLED", "").lower() in ("1", "
 EARTHQUAKE_POLL_INTERVAL = int(os.environ.get("EARTHQUAKE_POLL_INTERVAL", "120"))
 EARTHQUAKE_MIN_MAGNITUDE = float(os.environ.get("EARTHQUAKE_MIN_MAGNITUDE", "2.5"))
 
+# Sports bot (optional — no credentials needed, uses ESPN public API)
+SPORTS_BOT_ENABLED = os.environ.get("SPORTS_BOT_ENABLED", "").lower() in ("1", "true", "yes")
+SPORTS_POLL_INTERVAL = int(os.environ.get("SPORTS_POLL_INTERVAL", "60"))
+
 # Twitch streaming (optional — leave blank to disable)
 TWITCH_STREAM_KEY = os.environ.get("TWITCH_STREAM_KEY", "")
 STREAM_FPS = int(os.environ.get("STREAM_FPS", "30"))
