@@ -38,9 +38,11 @@ def main():
     else:
         print("[main] No SLACK_BOT_TOKEN set — skipping Slack bot")
 
+    twitch_bot = None
     if TWITCH_BOT_TOKEN and TWITCH_CHANNEL:
         from twitch_bot import TwitchBot
-        bots.append(TwitchBot(emulator))
+        twitch_bot = TwitchBot(emulator)
+        bots.append(twitch_bot)
     else:
         print("[main] No TWITCH_BOT_TOKEN/TWITCH_CHANNEL set — skipping Twitch bot")
 
@@ -72,6 +74,10 @@ def main():
         print("[main] No bots configured — exiting. Set SLACK_BOT_TOKEN, TWITCH_BOT_TOKEN+TWITCH_CHANNEL, or MARKET_BOT_ENABLED.")
         emulator.stop()
         return
+
+    if twitch_bot:
+        emulator.register_input_callback(twitch_bot.send_chat)
+        print("[main] Registered Twitch chat as input log output")
 
     for bot in bots:
         t = threading.Thread(target=bot.start, daemon=True)

@@ -1,6 +1,7 @@
 import io
 import threading
 import time
+from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 from pyboy import PyBoy
@@ -51,6 +52,7 @@ class Emulator:
         self._overlay_text: str = ""
         self._overlay_time: float = 0.0
         self._overlay_lock = threading.Lock()
+        self._input_callbacks: list = []
 
         self._loop_stopped = threading.Event()
 
@@ -66,11 +68,22 @@ class Emulator:
         print(f"[emulator] Queued '{cmd}' (queue depth: {queue_len})")
         return True
 
+    def register_input_callback(self, callback) -> None:
+        """Register a callback to be called whenever an input is accepted."""
+        self._input_callbacks.append(callback)
+
     def set_last_input(self, platform: str, username: str, command: str) -> None:
         """Set the overlay text shown on the stream for the next few seconds."""
         with self._overlay_lock:
             self._overlay_text = f"[{platform}] {username}: {command}"
             self._overlay_time = time.monotonic()
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[INPUT] {ts} | {platform:<10} | {username:<35} | {command}")
+        for cb in self._input_callbacks:
+            try:
+                cb(platform, username, command)
+            except Exception as e:
+                print(f"[emulator] Input callback error: {e}")
 
     def get_raw_frame(self) -> bytes:
         """Return raw RGB24 bytes of the latest screen frame (for FFmpeg streaming)."""

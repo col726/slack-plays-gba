@@ -16,9 +16,15 @@ class _TwitchClient(twitchio.Client):
         self._emulator = emulator
         self._total_messages = 0
         self._total_valid = 0
+        self._connected_channel = None
 
     async def event_ready(self):
         print(f"[twitch] Connected as {self.nick}, listening in #{self._channel}")
+        self._connected_channel = self.get_channel(self._channel)
+
+    async def send_message(self, text: str) -> None:
+        if self._connected_channel:
+            await self._connected_channel.send(text)
 
     async def event_message(self, message: twitchio.Message):
         if message.echo:
@@ -53,6 +59,15 @@ class TwitchBot(BaseBotAdapter):
             emulator=self._emulator,
         )
         self._loop.run_until_complete(self._client.start())
+
+    def send_chat(self, platform: str, username: str, command: str) -> None:
+        """Send an input event to Twitch chat. Safe to call from any thread."""
+        if self._loop and not self._loop.is_closed() and self._client:
+            msg = f"[{platform}] {username}: {command}"
+            asyncio.run_coroutine_threadsafe(
+                self._client.send_message(msg),
+                self._loop,
+            )
 
     def stop(self) -> None:
         print("[twitch] Stopping...")
